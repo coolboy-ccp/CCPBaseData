@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "TeamName+CoreDataProperties.h"
+#import "NBATeams+CoreDataProperties.h"
 
 @interface AppDelegate ()
 
@@ -16,8 +18,63 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
     return YES;
+}
+
+//KVC模式创建
+- (void)insertCoreData1 {
+    NSManagedObject *teamName = [NSEntityDescription insertNewObjectForEntityForName:@"TeamName" inManagedObjectContext:[self managedObjectContext]];
+    [teamName setValue:@"LAC2" forKey:@"name"];
+    [teamName setValue:@(16) forKey:@"numbers"];
+    NSManagedObject *teams = [NSEntityDescription insertNewObjectForEntityForName:@"NBATeams" inManagedObjectContext:[self managedObjectContext]];
+    [teams setValue:teamName forKey:@"teamName"];
+    [teams setValue:@(2) forKey:@"number"];
+    NSError *error;
+    if (![[self managedObjectContext] save:&error]) {
+        NSLog(@"can't save,reason:%@",[error localizedDescription]);
+    }
+    [self FetchRequestData];
+    
+}
+
+//生成NSManagedObject subclass创建
+- (void)insertCoreData {
+    TeamName *teamName = [NSEntityDescription insertNewObjectForEntityForName:@"TeamName" inManagedObjectContext:[self managedObjectContext]];
+    teamName.name = @"LAC1";
+    teamName.numbers = @(15);
+    NBATeams *teams = [NSEntityDescription insertNewObjectForEntityForName:@"NBATeams" inManagedObjectContext:[self managedObjectContext]];
+    teams.teamName = teamName;
+    teams.number = @(1);
+    NSError *error;
+    if (![[self managedObjectContext] save:&error]) {
+        NSLog(@"can't save,reason:%@",[error localizedDescription]);
+    }
+    [self FetchRequestData];
+}
+
+- (void)FetchRequestData {
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"NBATeams" inManagedObjectContext:[self managedObjectContext]];
+    [request setEntity:entity];
+    NSError *error;
+    NSArray *objects = [[self managedObjectContext] executeFetchRequest:request error:&error];
+    for (NBATeams *team in objects) {
+       // [self deleteContext];
+        NSLog(@"number:%@",team.number);
+        TeamName *teamName = (TeamName *)team.teamName;
+        NSLog(@"teamName:%@",teamName.name);
+        NSLog(@"teamNumbers:%@",teamName.numbers);
+    }
+}
+
+- (void)deleteContext {
+    NSManagedObject *teamName = [NSEntityDescription insertNewObjectForEntityForName:@"TeamName" inManagedObjectContext:[self managedObjectContext]];
+    [[self managedObjectContext] deleteObject:teamName];
+    NSError *error;
+    if (![[self managedObjectContext] save:&error]) {
+        NSLog(@"can't save,reason:%@",[error localizedDescription]);
+    }
+  
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

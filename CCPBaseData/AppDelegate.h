@@ -19,7 +19,7 @@
 
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
-
-
+- (void)insertCoreData;
+- (void)insertCoreData1;
 @end
 

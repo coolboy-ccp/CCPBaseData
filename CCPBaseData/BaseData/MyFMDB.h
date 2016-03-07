@@ -1,15 +1,13 @@
 //
-//  ViewController.h
+//  MyFMDB.h
 //  MyOwnStudy
 //
 //  Created by liqunfei on 16/2/22.
 //  Copyright © 2016年 chuchengpeng. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface ViewController : UIViewController
-
-
+@interface MyFMDB : NSObject
+- (void)createFMDB;
 @end
-
